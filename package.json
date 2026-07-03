@@ -1,0 +1,25 @@
+{
+  "name": "mini-notes-anna",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev:ui": "anna-app dev --no-llm",
+    "validate": "anna-app validate --strict",
+    "executa:mock": "anna-app executa dev ./executas/mini-notes-summary-go --mock-sampling ./fixtures/mock-sampling.jsonl",
+    "test:rpc": "node tests/manual-rpc.mjs",
+    "package:executa": "bash scripts/package-executa.sh",
+    "package:executa:all": "bash scripts/package-all-executa.sh"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "typescript": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@anna-ai/cli": "latest"
+  }
+}

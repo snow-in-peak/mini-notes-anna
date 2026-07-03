@@ -1,0 +1,7 @@
+{
+  "slug": "mini-notes-anna",
+  "name": "Mini Notes with LLM Summary",
+  "version": "0.1.0",
+  "category": "productivity",
+  "description": "A local Anna App that stores notes through Anna storage and summarizes them via Executa sampling."
+}

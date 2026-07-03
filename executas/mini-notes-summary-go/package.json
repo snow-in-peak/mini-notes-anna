@@ -1,0 +1,10 @@
+{
+  "name": "mini-notes-summary",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./run.sh",
+  "bin": "./run.sh",
+  "scripts": {
+    "start": "./run.sh"
+  }
+}

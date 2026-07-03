@@ -1,0 +1,1 @@
+{"match":{"method":"sampling/createMessage"},"result":{"role":"assistant","content":{"type":"text","text":"Summary: Follow up with the customer tomorrow, fix the login bug, and turn the workshop ideas into a concrete agenda. Priority: handle the customer follow-up first, then the login bug, then workshop planning."},"model":"mock-sampling-fixture","stopReason":"endTurn"}}

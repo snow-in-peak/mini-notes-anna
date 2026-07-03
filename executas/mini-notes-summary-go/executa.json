@@ -1,0 +1,47 @@
+{
+  "slug": "mini-notes-summary",
+  "name": "mini-notes-summary",
+  "display_name": "Mini Notes Summary",
+  "version": "0.1.0",
+  "executa_type": "tool",
+  "description": "Summarizes Mini Notes by requesting host LLM sampling over reverse JSON-RPC.",
+  "tool_id": "bundled:mini-notes-summary",
+  "type": "go",
+  "enabled": true,
+  "distribution": {
+    "active": "local",
+    "profiles": {
+      "local": {
+        "type": "local",
+        "supports_protocol": true
+      },
+      "binary": {
+        "type": "binary",
+        "executable_name": "mini-notes-summary",
+        "supports_protocol": true,
+        "binary_urls": {
+          "darwin-arm64": {
+            "url": "https://github.com/OWNER/REPO/releases/download/mini-notes-summary-v0.1.0/mini-notes-summary-darwin-arm64.tar.gz",
+            "entrypoint": "bin/mini-notes-summary",
+            "format": "tar.gz"
+          },
+          "darwin-x86_64": {
+            "url": "https://github.com/OWNER/REPO/releases/download/mini-notes-summary-v0.1.0/mini-notes-summary-darwin-x86_64.tar.gz",
+            "entrypoint": "bin/mini-notes-summary",
+            "format": "tar.gz"
+          },
+          "windows-x86_64": {
+            "url": "https://github.com/OWNER/REPO/releases/download/mini-notes-summary-v0.1.0/mini-notes-summary-windows-x86_64.zip",
+            "entrypoint": "bin/mini-notes-summary.exe",
+            "format": "zip"
+          }
+        }
+      }
+    }
+  },
+  "command": [
+    "go",
+    "run",
+    "."
+  ]
+}

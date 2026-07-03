@@ -1,0 +1,7 @@
+node_modules/
+dist/
+build/
+release/
+executas/mini-notes-summary-go/mini-notes-summary
+executas/mini-notes-summary-go/mini-notes-summary.exe
+.DS_Store
