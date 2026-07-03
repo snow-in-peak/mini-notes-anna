@@ -1,1 +1,1 @@
-{"match":{"method":"sampling/createMessage"},"result":{"role":"assistant","content":{"type":"text","text":"Summary: Follow up with the customer tomorrow, fix the login bug, and turn the workshop ideas into a concrete agenda. Priority: handle the customer follow-up first, then the login bug, then workshop planning."},"model":"mock-sampling-fixture","stopReason":"endTurn"}}
+{"match":{"method":"sampling/createMessage"},"response":{"jsonrpc":"2.0","result":{"model":"mock-model","content":{"type":"text","text":"Mock summary: 你有 3 条笔记，重点是客户跟进、登录 bug 修复和 Workshop 内容准备。"}}}}

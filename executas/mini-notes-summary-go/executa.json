@@ -21,17 +21,17 @@
         "supports_protocol": true,
         "binary_urls": {
           "darwin-arm64": {
-            "url": "https://github.com/OWNER/REPO/releases/download/mini-notes-summary-v0.1.0/mini-notes-summary-darwin-arm64.tar.gz",
+            "url": "https://github.com/snow-in-peak/mini-notes-anna/releases/download/mini-notes-summary-v0.1.0/mini-notes-summary-darwin-arm64.tar.gz",
             "entrypoint": "bin/mini-notes-summary",
             "format": "tar.gz"
           },
           "darwin-x86_64": {
-            "url": "https://github.com/OWNER/REPO/releases/download/mini-notes-summary-v0.1.0/mini-notes-summary-darwin-x86_64.tar.gz",
+            "url": "https://github.com/snow-in-peak/mini-notes-anna/releases/download/mini-notes-summary-v0.1.0/mini-notes-summary-darwin-x86_64.tar.gz",
             "entrypoint": "bin/mini-notes-summary",
             "format": "tar.gz"
           },
           "windows-x86_64": {
-            "url": "https://github.com/OWNER/REPO/releases/download/mini-notes-summary-v0.1.0/mini-notes-summary-windows-x86_64.zip",
+            "url": "https://github.com/snow-in-peak/mini-notes-anna/releases/download/mini-notes-summary-v0.1.0/mini-notes-summary-windows-x86_64.zip",
             "entrypoint": "bin/mini-notes-summary.exe",
             "format": "zip"
           }

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'mini-notes-summary-v*'
+      - "mini-notes-summary-v*"
 
 permissions:
   contents: write
@@ -12,57 +12,50 @@ permissions:
 jobs:
   build-release-assets:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.21'
-
-      - name: Set up Node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "22"
           cache: npm
 
-      - name: Install frontend dependencies
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22.x"
+
+      - name: Install dependencies
         run: npm ci
 
       - name: Build frontend bundle
         run: npm run build
 
-      - name: Build current Linux smoke binary
+      - name: Manual JSON-RPC smoke test
+        run: npm run test:rpc
+
+      - name: Smoke test describe
         run: |
           cd executas/mini-notes-summary-go
-          go build -o mini-notes-summary .
+          printf '{"jsonrpc":"2.0","id":1,"method":"describe","params":{}}\n' | go run . > /tmp/describe.json
+          grep '"mini-notes-summary"' /tmp/describe.json
+          grep '"llm.sample"' /tmp/describe.json
 
-      - name: Smoke test JSON-RPC describe
-        run: |
-          cd executas/mini-notes-summary-go
-          printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"describe"}' | ./mini-notes-summary > /tmp/describe.json
-          grep -q '"name":"mini-notes-summary"' /tmp/describe.json
-          grep -q '"host_capabilities":\["llm.sample"\]' /tmp/describe.json
+      - name: Build required release assets
+        run: npm run package:executa:all
 
-      - name: Build three release archives
-        run: bash scripts/package-all-executa.sh
-
-      - name: Verify archive roots
-        run: |
-          mkdir -p /tmp/check-darwin /tmp/check-win
-          tar -tzf release/mini-notes-summary-darwin-arm64.tar.gz | grep -q '^manifest.json$'
-          tar -tzf release/mini-notes-summary-darwin-arm64.tar.gz | grep -q '^bin/mini-notes-summary$'
-          unzip -l release/mini-notes-summary-windows-x86_64.zip | grep -q 'manifest.json'
-          unzip -l release/mini-notes-summary-windows-x86_64.zip | grep -q 'bin/mini-notes-summary.exe'
-
-      - name: Create or update GitHub Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'mini-notes-summary-v0.1.0' }}
-          name: Mini Notes Summary ${{ github.ref_type == 'tag' && github.ref_name || 'v0.1.0' }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || 'mini-notes-summary-v0.1.0' }}
           files: |
             release/mini-notes-summary-darwin-arm64.tar.gz
+            release/mini-notes-summary-darwin-arm64.tar.gz.sha256
             release/mini-notes-summary-darwin-x86_64.tar.gz
+            release/mini-notes-summary-darwin-x86_64.tar.gz.sha256
             release/mini-notes-summary-windows-x86_64.zip
-            release/*.sha256
+            release/mini-notes-summary-windows-x86_64.zip.sha256

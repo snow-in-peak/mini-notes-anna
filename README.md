@@ -35,7 +35,7 @@ mini-notes-anna/
 │   └── styles.css
 ├── executas/
 │   └── mini-notes-summary-go/
-│       ├── executa.json       # local + binary bundleribution metadata
+│       ├── executa.json       # local + binary distribution metadata
 │       ├── go.mod
 │       └── main.go            # JSON-RPC 2.0 stdio Executa Tool
 ├── fixtures/
@@ -51,14 +51,14 @@ mini-notes-anna/
 
 ## Ubuntu prerequisites
 
-On Ubuntu, install Node.js 20+, npm, Go 1.21+, zip, unzip, and tar.
+On Ubuntu, install Node.js 22+, npm, Go 1.21+, zip, unzip, and tar.
 
 Example using Ubuntu packages plus NodeSource:
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y curl ca-certificates gnupg git tar gzip zip unzip build-essential
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt-get install -y nodejs golang-go
 node --version
 npm --version
@@ -93,7 +93,7 @@ bundle/index.html
 bundle/assets/...
 ```
 
-`manifest.json` points Anna to `ui.bundle.entry = "bundle/index.html"` and the default view also uses `bundle/index.html`.
+`manifest.json` points Anna to `ui.bundle.entry = "index.html"` inside the Anna bundle directory; after build, the file exists at `bundle/index.html`.
 
 ## Validate the Anna App manifest
 
@@ -330,7 +330,7 @@ The workflow:
    - `mini-notes-summary-windows-x86_64.zip`
 6. Uploads them to GitHub Release assets, not only workflow artifacts.
 
-Before publishing, replace `OWNER/REPO` in `executas/mini-notes-summary-go/executa.json` with your real GitHub repository path.
+Binary release URLs in `executas/mini-notes-summary-go/executa.json` point to this repository's GitHub Releases.
 
 ## Identity consistency checklist
 
