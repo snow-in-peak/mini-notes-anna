@@ -41,8 +41,9 @@ mini-notes-anna/
 ├── fixtures/
 │   └── mock-sampling.jsonl    # anna-app executa dev --mock-sampling fixture
 ├── scripts/
+│   ├── executa-manifest.sh    # shared archive-root manifest.json + archive helpers
 │   ├── package-executa.sh     # build archive for current host platform
-│   └── package-all-executa.sh # build the three required release archives
+│   └── package-all-executa.sh # build + verify the three required release archives
 ├── tests/
 │   └── manual-rpc.mjs         # direct JSON-RPC smoke test with sampling response mock
 └── .github/workflows/
@@ -164,22 +165,43 @@ cd executas/mini-notes-summary-go
 ../../node_modules/.bin/anna-app executa dev --mock-sampling ../../fixtures/mock-sampling.jsonl
 ```
 
-Then invoke the `summarize` tool from the Executa dev harness using notes such as:
+At the `executa>` prompt (the REPL accepts `invoke <tool> <json-args>`), type:
+
+```text
+invoke summarize {"notes":[{"order":1,"content":"明天跟客户 follow up"},{"order":2,"content":"修复登录 bug"},{"order":3,"content":"Workshop 内容想法"}]}
+```
+
+The fixture returns a fixed summary, so the expected response is:
 
 ```json
 {
-  "notes": [
-    { "order": 1, "content": "明天跟客户 follow up" },
-    { "order": 2, "content": "修复登录 bug" },
-    { "order": 3, "content": "Workshop 内容想法" }
-  ]
+  "invoke_id": "local-...",
+  "model": "mock-model",
+  "summary": "Mock summary: 你有 3 条笔记，重点是客户跟进、登录 bug 修复和 Workshop 内容准备。"
 }
+```
+
+If `summary` comes back as `"(mock) no fixture matched"`, the fixture is not being
+matched. The sampling bridge selects a fixture line by its **top-level `ns` +
+`method`** fields — either `ns: "sampling"` / `method: "createMessage"` or
+`ns: "llm"` / `method: "complete"` — and returns that line's `result`. A line
+without those top-level keys never matches. `fixtures/mock-sampling.jsonl` uses
+the `llm`/`complete` form; lines beginning with `#` are ignored as comments.
+
+The same path can be exercised non-interactively:
+
+```bash
+cd executas/mini-notes-summary-go
+../../node_modules/.bin/anna-app executa dev \
+  --mock-sampling ../../fixtures/mock-sampling.jsonl \
+  --invoke summarize \
+  --args '{"notes":[{"order":1,"content":"明天跟客户 follow up"}]}' --json
 ```
 
 How to confirm `sampling/createMessage` was actually emitted:
 
 - The Executa dev harness log should show a reverse JSON-RPC request with `method: "sampling/createMessage"`.
-- `fixtures/mock-sampling.jsonl` matches `sampling/createMessage`, so a returned fixture summary proves the reverse call happened.
+- The returned `summary` is the fixture text and `model` is `mock-model`, which proves the reverse call happened rather than a local fallback.
 - `tests/manual-rpc.mjs` also checks this directly without the Anna CLI.
 
 ## Manual JSON-RPC tests
@@ -262,7 +284,11 @@ release/mini-notes-summary-darwin-x86_64.tar.gz
 release/mini-notes-summary-windows-x86_64.zip
 ```
 
-Each archive has `manifest.json` at the archive root and the executable under `bin/`:
+Each archive has `manifest.json` at the archive root and the executable under `bin/`.
+`npm run package:executa:all` verifies this layout itself and fails if either file is
+missing or if the manifest entrypoint disagrees with the packaged binary.
+
+Inspect the archive listings:
 
 ```bash
 tar -tzf release/mini-notes-summary-darwin-arm64.tar.gz
@@ -283,19 +309,41 @@ manifest.json
 bin/mini-notes-summary.exe
 ```
 
+To read the manifest out of an archive:
+
+```bash
+mkdir -p /tmp/mini-notes-check
+tar -xzf release/mini-notes-summary-darwin-arm64.tar.gz -C /tmp/mini-notes-check
+cat /tmp/mini-notes-check/manifest.json
+```
+
 The archive root `manifest.json` declares:
 
 ```json
 {
+  "name": "mini-notes-summary",
+  "display_name": "Mini Notes Summary",
+  "version": "0.1.0",
+  "description": "Summarizes Mini Notes by requesting host LLM sampling over reverse JSON-RPC.",
+  "platform": "darwin-arm64",
   "runtime": {
-    "binary": {
-      "entrypoint": "bin/mini-notes-summary"
-    }
-  }
+    "type": "binary",
+    "entrypoint": "bin/mini-notes-summary"
+  },
+  "permissions": [],
+  "host_capabilities": ["llm.sample"]
 }
 ```
 
-For Windows the entrypoint is `bin/mini-notes-summary.exe`.
+`platform` is the archive's own platform key (`darwin-arm64`, `darwin-x86_64`, or
+`windows-x86_64`). Both macOS archives use entrypoint `bin/mini-notes-summary`;
+`windows-x86_64` uses `bin/mini-notes-summary.exe`.
+
+Note that Anna resolves the binary it launches from
+`distribution.profiles.binary.binary_urls["<platform>"].entrypoint` in
+`executas/mini-notes-summary-go/executa.json`. The archive-root `manifest.json` is
+descriptive metadata that must agree with it — `scripts/executa-manifest.sh` is the
+single source for both packaging scripts so the two cannot drift.
 
 ## GitHub Actions release workflow
 

@@ -3,8 +3,9 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EXECUTA_DIR="$ROOT/executas/mini-notes-summary-go"
-NAME="mini-notes-summary"
-VERSION="0.1.0"
+
+# shellcheck source=./executa-manifest.sh
+source "$ROOT/scripts/executa-manifest.sh"
 
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
 ARCH="$(uname -m)"
@@ -27,29 +28,8 @@ mkdir -p "$BUILD_DIR/bin" "$RELEASE_DIR"
   GOOS="$GOOS" GOARCH="$GOARCH" CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o "$BUILD_DIR/bin/$NAME$EXT" .
 )
 
-cat > "$BUILD_DIR/manifest.json" <<JSON
-{
-  "name": "$NAME",
-  "display_name": "Mini Notes Summary",
-  "version": "$VERSION",
-  "description": "Summarizes Mini Notes through Anna host LLM sampling.",
-  "host_capabilities": ["llm.sample"],
-  "runtime": {
-    "binary": {
-      "entrypoint": "bin/$NAME$EXT"
-    }
-  }
-}
-JSON
+write_manifest "$BUILD_DIR" "$PLATFORM" "$EXT"
+ARCHIVE="$(archive_platform "$BUILD_DIR" "$PLATFORM" "$FORMAT" "$RELEASE_DIR")"
 
-if [[ "$FORMAT" == "zip" ]]; then
-  ARCHIVE="$RELEASE_DIR/$NAME-$PLATFORM.zip"
-  (cd "$BUILD_DIR" && zip -qr "$ARCHIVE" manifest.json bin)
-else
-  ARCHIVE="$RELEASE_DIR/$NAME-$PLATFORM.tar.gz"
-  (cd "$BUILD_DIR" && tar -czf "$ARCHIVE" manifest.json bin)
-fi
-
-sha256sum "$ARCHIVE" | tee "$ARCHIVE.sha256"
 stat -c '%n %s bytes' "$ARCHIVE"
 echo "Built $ARCHIVE"

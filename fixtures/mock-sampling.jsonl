@@ -1,1 +1,5 @@
-{"match":{"method":"sampling/createMessage"},"response":{"jsonrpc":"2.0","result":{"model":"mock-model","content":{"type":"text","text":"Mock summary: 你有 3 条笔记，重点是客户跟进、登录 bug 修复和 Workshop 内容准备。"}}}}
+# Mock LLM fixture for `anna-app executa dev --mock-sampling`.
+# The sampling bridge matches a line by its top-level ns+method: either
+# ns="sampling"/method="createMessage" or ns="llm"/method="complete".
+# An optional `match.contentIncludes` narrows on the rendered prompt text.
+{"ns":"llm","method":"complete","result":{"role":"assistant","content":{"type":"text","text":"Mock summary: 你有 3 条笔记，重点是客户跟进、登录 bug 修复和 Workshop 内容准备。"},"model":"mock-model","stopReason":"endTurn","usage":{"inputTokens":64,"outputTokens":32,"totalTokens":96}}}
